@@ -1465,7 +1465,7 @@ void CDecoder::Reset()
   Message *reply;
   if (m_vdpauOutput.m_controlPort.SendOutMessageSync(COutputControlProtocol::FLUSH,
                                                  &reply,
-                                                 2000))
+                                                 200))
   {
     bool success = reply->signal == COutputControlProtocol::ACC ? true : false;
     reply->Release();
@@ -3556,11 +3556,12 @@ void COutput::Flush()
 
         continue;
       }
-      m_config.videoSurfaces->MarkRender(it2->second.sourceVuv);
+      //m_config.videoSurfaces->MarkRender(it2->second.sourceVuv);
     }
 #endif
   }
 
+  Sleep(250);
   // clear processed pics
   while(!m_bufferPool.processedPics.empty())
   {

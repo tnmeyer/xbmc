@@ -2701,7 +2701,7 @@ XB_CONFIG_MODULE([lib/gtest], [
     --with-pthreads
 ], [$SKIP_CONFIG_GTEST])
 
-LIBS="$LIBS $CEDARLIBS"
+LIBS="$LIBS"
 
 AC_OUTPUT
 

@@ -21,12 +21,12 @@
  */
 
 #include "EGLNativeType.h"
-class CEGLNativeTypeA10 : public CEGLNativeType
+class CEGLNativeTypeSunxi : public CEGLNativeType
 {
 public:
-  CEGLNativeTypeA10();
-  virtual ~CEGLNativeTypeA10();
-  virtual std::string GetNativeName() const { return "A10"; };
+  CEGLNativeTypeSunxi();
+  virtual ~CEGLNativeTypeSunxi();
+  virtual std::string GetNativeName() const { return "Sunxi DISP"; };
   virtual bool  CheckCompatibility();
   virtual void  Initialize();
   virtual void  Destroy();

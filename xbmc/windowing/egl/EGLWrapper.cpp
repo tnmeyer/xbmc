@@ -22,7 +22,7 @@
 #ifdef HAS_EGL
 #include "system_gl.h"
 #include "utils/log.h"
-#include "EGLNativeTypeA10.h"
+#include "EGLNativeTypeSunxi.h"
 #include <assert.h>
 #if defined(HAVE_WAYLAND)
   #include "EGLNativeTypeWayland.h"
@@ -107,7 +107,7 @@ bool CEGLWrapper::Initialize(const std::string &implementation)
 #if defined(HAS_IMXVPU)
       (nativeGuess = CreateEGLNativeType<CEGLNativeTypeIMX>(implementation)) ||
 #endif
-      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeA10>(implementation)) ||
+      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeSunxi>(implementation)) ||
       (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation))
      )
   {

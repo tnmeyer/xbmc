@@ -1029,6 +1029,10 @@ int CXBMCRenderManager::AddVideoPicture(DVDVideoPicture& pic)
   else if(pic.format == RENDER_FMT_MMAL)
     m_pRenderer->AddProcessor(pic.MMALBuffer, index);
 #endif
+#ifdef HAS_CEDARX
+  else if(pic.format == RENDER_FMT_DISP2)
+    m_pRenderer->AddProcessor(pic.Disp2Buffer, index);
+#endif
 
   m_pRenderer->ReleaseImage(index, false);
 

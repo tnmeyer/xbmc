@@ -57,6 +57,7 @@ class CDVDVideoCodecStageFright;
 class CDVDMediaCodecInfo;
 class CDVDVideoCodecIMXBuffer;
 class CMMALVideoBuffer;
+class CCedarXBuffer;
 typedef void* EGLImageKHR;
 
 
@@ -106,6 +107,10 @@ struct DVDVideoPicture
 
     struct {
       CMMALVideoBuffer *MMALBuffer;
+    };
+    
+    struct {
+      CCedarXBuffer *Disp2Buffer;
     };
 
   };

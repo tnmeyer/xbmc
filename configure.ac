@@ -513,7 +513,7 @@ AC_ARG_ENABLE([breakpad],
 
 AC_ARG_ENABLE([codec],
   [AS_HELP_STRING([--enable-codec],
-  [enable additional codecs from a list of comma separated names, (default is none, choices are amcodec, libstagefright and imxvpu)])],
+  [enable additional codecs from a list of comma separated names, (default is none, choices are amcodec, libstagefright, imxvpu and cedarx)])],
   [add_codecs=$enableval],
   [add_codecs=no])
 
@@ -1866,6 +1866,10 @@ for codecs in `echo $add_codecs | sed 's/,/ /g'`; do
         ;;
     *libstagefright*)
         XB_ADD_CODEC([LIBSTAGEFRIGHT], [libstagefright], [$codecs])
+        ;;
+    *cedarx*)
+        AC_CHECK_LIB([cedar_vdecoder], main, LIBS="$LIBS -lcedar_base -lcedar_common -lcedar_vdecoder", AC_MSG_ERROR($missing_library))
+        XB_ADD_CODEC([CEDARX], [cedarx], [$codecs])
         ;;
     *imxvpu*)
       AC_CHECK_HEADER([imx-mm/vpu/vpu_wrapper.h],, AC_MSG_ERROR($missing_headers))

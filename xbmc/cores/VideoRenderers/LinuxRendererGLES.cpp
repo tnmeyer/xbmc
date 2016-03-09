@@ -93,6 +93,10 @@ static PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR;
 #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
 #endif
 
+#ifdef HAS_CEDARX
+#include "DVDCodecs/Video/DVDVideoCodecCedarX.h"
+#endif
+
 using namespace Shaders;
 
 CLinuxRendererGLES::YUVBUFFER::YUVBUFFER()
@@ -115,6 +119,9 @@ CLinuxRendererGLES::YUVBUFFER::YUVBUFFER()
 #endif
 #ifdef HAS_IMXVPU
   IMXBuffer = NULL;
+#endif
+#ifdef HAS_CEDARX
+  Disp2Buffer = NULL;
 #endif
 }
 
@@ -301,6 +308,11 @@ int CLinuxRendererGLES::GetImage(YV12Image *image, int source, bool readonly)
     return source;
   }
   if ( m_renderMethod & RENDER_IMXMAP )
+  {
+    return source;
+  }
+  
+  if ( m_renderMethod & RENDER_DISP2 )
   {
     return source;
   }
@@ -733,6 +745,52 @@ void CLinuxRendererGLES::RenderUpdateVideo(bool clear, DWORD flags, DWORD alpha)
 #endif
   }
 #endif
+#ifdef HAS_CEDARX
+  else if (m_renderMethod & RENDER_DISP2)
+  {
+    CCedarXBuffer *buffer = m_buffers[m_iYV12RenderBuffer].Disp2Buffer;
+    if (buffer)
+    {
+      // this hack is needed to get the 2D mode of a 3D movie going
+      RENDER_STEREO_MODE stereo_mode = g_graphicsContext.GetStereoMode();
+      if (stereo_mode)
+        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
+
+      ManageDisplay();
+
+      if (stereo_mode)
+        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+
+      CRect dstRect(m_destRect);
+      CRect srcRect(m_sourceRect);
+      switch (stereo_mode)
+      {
+        case RENDER_STEREO_MODE_SPLIT_HORIZONTAL:
+          dstRect.y2 *= 2.0;
+          srcRect.y2 *= 2.0;
+        break;
+
+        case RENDER_STEREO_MODE_SPLIT_VERTICAL:
+          dstRect.x2 *= 2.0;
+          srcRect.x2 *= 2.0;
+        break;
+
+        default:
+        break;
+      }
+
+      if (flags & RENDER_FLAG_FIELDMASK)
+      {
+        g_SunxiContext.SetDeinterlacing(true);
+      }
+      // Progressive
+      else
+        g_SunxiContext.SetDeinterlacing(false);
+      
+      g_SunxiContext.Render(buffer, srcRect, dstRect);
+    }
+  }
+#endif
 }
 
 void CLinuxRendererGLES::FlipPage(int source)
@@ -779,6 +837,9 @@ unsigned int CLinuxRendererGLES::PreInit()
 #endif
 #ifdef HAS_IMXVPU
   m_formats.push_back(RENDER_FMT_IMXMAP);
+#endif
+#ifdef HAS_CEDARX
+  m_formats.push_back(RENDER_FMT_DISP2);
 #endif
 
   // setup the background colour
@@ -894,6 +955,12 @@ void CLinuxRendererGLES::LoadShaders(int field)
         m_renderMethod = RENDER_IMXMAP;
         break;
       }
+      else if (m_format == RENDER_FMT_DISP2)
+      {
+        CLog::Log(LOGNOTICE, "GL: Using DISP2 render method");
+        m_renderMethod = RENDER_DISP2;
+        break;
+      }
       else if (m_format == RENDER_FMT_BYPASS)
       {
         CLog::Log(LOGNOTICE, "GL: Using BYPASS render method");
@@ -991,6 +1058,12 @@ void CLinuxRendererGLES::LoadShaders(int field)
     m_textureUpload = &CLinuxRendererGLES::UploadIMXMAPTexture;
     m_textureCreate = &CLinuxRendererGLES::CreateIMXMAPTexture;
     m_textureDelete = &CLinuxRendererGLES::DeleteIMXMAPTexture;
+  }
+  else if (m_format == RENDER_FMT_DISP2)
+  {
+    m_textureUpload = &CLinuxRendererGLES::UploadDisp2Texture;
+    m_textureCreate = &CLinuxRendererGLES::CreateDisp2Texture;
+    m_textureDelete = &CLinuxRendererGLES::DeleteDisp2Texture;
   }
   else if (m_format == RENDER_FMT_OMXEGL)
   {
@@ -1110,6 +1183,10 @@ void CLinuxRendererGLES::ReleaseBuffer(int idx)
   if (m_renderMethod & RENDER_IMXMAP)
     SAFE_RELEASE(buf.IMXBuffer);
 #endif
+#ifdef HAS_CEDARX
+  if (m_renderMethod & RENDER_DISP2)
+    SAFE_RELEASE(buf.Disp2Buffer);
+#endif
 }
 
 void CLinuxRendererGLES::Render(DWORD flags, int index)
@@ -1174,6 +1251,11 @@ void CLinuxRendererGLES::Render(DWORD flags, int index)
   else if (m_renderMethod & RENDER_IMXMAP)
   {
     RenderIMXMAPTexture(index, m_currentField);
+    VerifyGLState();
+  }
+  else if (m_renderMethod & RENDER_DISP2)
+  {
+    RenderDisp2Texture(index, m_currentField);
     VerifyGLState();
   }
   else
@@ -1889,6 +1971,10 @@ void CLinuxRendererGLES::RenderCoreVideoRef(int index, int field)
 }
 
 void CLinuxRendererGLES::RenderIMXMAPTexture(int index, int field)
+{
+}
+
+void CLinuxRendererGLES::RenderDisp2Texture(int index, int field)
 {
 }
 
@@ -2889,7 +2975,32 @@ bool CLinuxRendererGLES::CreateIMXMAPTexture(int index)
   glDisable(m_textureTarget);
   return true;
 }
+//********************************************************************************************************
+// DISP2 creation, deletion, copying + clearing
+//********************************************************************************************************
+void CLinuxRendererGLES::UploadDisp2Texture(int index)
+{
+}
 
+void CLinuxRendererGLES::DeleteDisp2Texture(int index)
+{
+#ifdef HAS_CEDARX
+  YUVBUFFER &buf = m_buffers[index];
+
+  if(buf.Disp2Buffer != NULL)
+  {
+    SAFE_RELEASE(buf.Disp2Buffer);
+  }
+#endif
+}
+
+bool CLinuxRendererGLES::CreateDisp2Texture(int index)
+{
+#ifdef HAS_CEDARX
+  m_buffers[index].Disp2Buffer = 0;
+#endif
+  return true;
+}
 
 bool CLinuxRendererGLES::Supports(ERENDERFEATURE feature)
 {
@@ -2996,6 +3107,11 @@ bool CLinuxRendererGLES::Supports(EINTERLACEMETHOD method)
 
   if(m_renderMethod & RENDER_CVREF)
     return false;
+  
+  if(m_renderMethod & RENDER_DISP2)
+  {
+    return false;
+  }
 
   if(method == VS_INTERLACEMETHOD_AUTO)
     return true;
@@ -3033,6 +3149,10 @@ bool CLinuxRendererGLES::Supports(ESCALINGMETHOD method)
   }
 
   if(m_renderMethod & RENDER_IMXMAP)
+    return false;
+  
+  //FIXME: enable scaling
+  if(m_renderMethod & RENDER_DISP2)
     return false;
 
   if (m_renderMethod & RENDER_MEDIACODECSURFACE)
@@ -3090,7 +3210,8 @@ CRenderInfo CLinuxRendererGLES::GetRenderInfo()
      m_format == RENDER_FMT_CVBREF ||
      m_format == RENDER_FMT_EGLIMG ||
      m_format == RENDER_FMT_MEDIACODEC ||
-    m_format == RENDER_FMT_MEDIACODECSURFACE)
+     m_format == RENDER_FMT_MEDIACODECSURFACE ||
+     m_format == RENDER_FMT_DISP2)
     info.optimal_buffer_size = 2;
   else if(m_format == RENDER_FMT_IMXMAP)
   {
@@ -3187,9 +3308,22 @@ void CLinuxRendererGLES::AddProcessor(CDVDVideoCodecIMXBuffer *buffer, int index
 }
 #endif
 
+#ifdef HAS_CEDARX
+void CLinuxRendererGLES::AddProcessor(CCedarXBuffer *buffer, int index)
+{
+  YUVBUFFER &buf = m_buffers[index];
+
+  SAFE_RELEASE(buf.Disp2Buffer);
+  buf.Disp2Buffer = buffer;
+
+  if (buffer)
+    buffer->Lock();
+}
+#endif
+
 bool CLinuxRendererGLES::IsGuiLayer()
 {
-  if (m_format == RENDER_FMT_BYPASS || m_format == RENDER_FMT_IMXMAP || m_format == RENDER_FMT_MEDIACODECSURFACE)
+  if (m_format == RENDER_FMT_BYPASS || m_format == RENDER_FMT_IMXMAP || m_format == RENDER_FMT_MEDIACODECSURFACE || m_format == RENDER_FMT_DISP2)
     return false;
   else
     return true;

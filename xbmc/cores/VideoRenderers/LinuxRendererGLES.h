@@ -45,6 +45,7 @@ class CDVDMediaCodecInfo;
 #ifdef HAS_IMXVPU
 class CDVDVideoCodecIMXBuffer;
 #endif
+class CCedarXBuffer;
 typedef std::vector<int>     Features;
 
 
@@ -94,7 +95,8 @@ enum RenderMethod
   RENDER_EGLIMG = 0x200,
   RENDER_MEDIACODEC = 0x400,
   RENDER_MEDIACODECSURFACE = 0x800,
-  RENDER_IMXMAP = 0x1000
+  RENDER_IMXMAP = 0x1000,
+  RENDER_DISP2  = 0x2000
 };
 
 enum RenderQuality
@@ -177,6 +179,9 @@ public:
 #ifdef HAS_IMXVPU
   virtual void         AddProcessor(CDVDVideoCodecIMXBuffer *codecinfo, int index);
 #endif
+#ifdef HAS_CEDARX
+  virtual void         AddProcessor(CCedarXBuffer *codecinfo, int index);
+#endif
 
 protected:
   virtual void Render(DWORD flags, int index);
@@ -225,6 +230,10 @@ protected:
   void UploadIMXMAPTexture(int index);
   void DeleteIMXMAPTexture(int index);
   bool CreateIMXMAPTexture(int index);
+  
+  void UploadDisp2Texture(int index);
+  void DeleteDisp2Texture(int index);
+  bool CreateDisp2Texture(int index);
 
   void CalculateTextureSourceRects(int source, int num_planes);
 
@@ -237,6 +246,7 @@ protected:
   void RenderCoreVideoRef(int index, int field);  // CoreVideo reference
   void RenderSurfaceTexture(int index, int field);// MediaCodec rendering using SurfaceTexture
   void RenderIMXMAPTexture(int index, int field); // IMXMAP rendering
+  void RenderDisp2Texture(int index, int field); // Disp2 rendering
 
   CFrameBufferObject m_fbo;
 
@@ -305,6 +315,9 @@ protected:
 #endif
 #ifdef HAS_IMXVPU
     CDVDVideoCodecIMXBuffer *IMXBuffer;
+#endif
+#ifdef HAS_CEDARX
+    CCedarXBuffer *Disp2Buffer;
 #endif
   };
 

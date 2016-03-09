@@ -40,6 +40,7 @@
 #if defined(HAS_IMXVPU)
 #include "Video/DVDVideoCodecIMX.h"
 #endif
+#include "Video/DVDVideoCodecCedarX.h"
 #include "Video/MMALCodec.h"
 #include "Video/DVDVideoCodecStageFright.h"
 #if defined(HAS_LIBAMCODEC)
@@ -159,6 +160,11 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, const C
 #else
   hwSupport += "AMCodec:no ";
 #endif
+#if defined(HAS_CEDARX)
+  hwSupport += "CedarX:yes ";
+#else
+  hwSupport += "CedarX:no ";
+#endif
 #if defined(TARGET_ANDROID)
   hwSupport += "MediaCodec:yes ";
 #else
@@ -230,6 +236,13 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, const C
   if (!hint.software)
   {
     if ( (pCodec = OpenCodec(new CDVDVideoCodecIMX(), hint, options)) ) return pCodec;
+  }
+#endif
+
+#if defined(HAS_CEDARX)
+  if (!hint.software)
+  {
+    if ( (pCodec = OpenCodec(new CDVDVideoCodecSunxi(), hint, options)) ) return pCodec;
   }
 #endif
 

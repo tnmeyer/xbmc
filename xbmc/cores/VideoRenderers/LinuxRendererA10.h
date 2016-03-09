@@ -1,9 +1,9 @@
-#ifndef LINUXRENDERERGLES_RENDERER
-#define LINUXRENDERERGLES_RENDERER
+#ifndef LinuxRendererA10_RENDERER
+#define LinuxRendererA10_RENDERER
 
 /*
- *      Copyright (C) 2010-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2010-2012 Team XBMC and others
+ *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,24 +29,32 @@
 #include "xbmc/guilib/Shader.h"
 #include "settings/VideoSettings.h"
 #include "RenderFlags.h"
-#include "RenderFormats.h"
 #include "guilib/GraphicContext.h"
 #include "BaseRenderer.h"
 #include "xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h"
-#include "xbmc/cores/dvdplayer/DVDCodecs/Video/VDPAU.h"
+#if not defined (HAVE_LIBVDPAU)
+#include "xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecA10.h"
+#endif
+
+extern "C" {
+#if not defined (HAVE_LIBVDPAU)
+  #include <libcedarv.h>
+#endif
+#include <drv_display_sun4i.h>
+#ifndef CEDARV_FRAME_HAS_PHY_ADDR
+#include <os_adapter.h>
+#endif
+}
 
 class CRenderCapture;
 
 class CBaseTexture;
 namespace Shaders { class BaseYUV2RGBShader; }
 namespace Shaders { class BaseVideoFilterShader; }
-class COpenMaxVideo;
-class CDVDVideoCodecStageFright;
-class CDVDMediaCodecInfo;
-#ifdef HAS_IMXVPU
-class CDVDVideoCodecIMXBuffer;
-#endif
+
 typedef std::vector<int>     Features;
+
+//#define NUM_BUFFERS 2
 
 
 #undef ALIGN
@@ -87,16 +95,8 @@ struct YUVCOEF
 enum RenderMethod
 {
   RENDER_GLSL   = 0x001,
-  RENDER_SW     = 0x004,
-  RENDER_VDPAU  = 0x008,
-  RENDER_POT    = 0x010,
-  RENDER_OMXEGL = 0x040,
-  RENDER_CVREF  = 0x080,
-  RENDER_BYPASS = 0x100,
-  RENDER_EGLIMG = 0x200,
-  RENDER_MEDIACODEC = 0x400,
-  RENDER_MEDIACODECSURFACE = 0x800,
-  RENDER_IMXMAP = 0x1000
+  RENDER_A10BUF = 0x100,
+  RENDER_BYPASS = 0x400
 };
 
 enum RenderQuality
@@ -104,7 +104,6 @@ enum RenderQuality
   RQ_LOW=1,
   RQ_SINGLEPASS,
   RQ_MULTIPASS,
-  RQ_SOFTWARE
 };
 
 #define PLANE_Y 0
@@ -115,40 +114,31 @@ enum RenderQuality
 #define FIELD_TOP 1
 #define FIELD_BOT 2
 
-extern YUVRANGE yuv_range_lim;
-extern YUVRANGE yuv_range_full;
-extern YUVCOEF yuv_coef_bt601;
-extern YUVCOEF yuv_coef_bt709;
-extern YUVCOEF yuv_coef_ebu;
-extern YUVCOEF yuv_coef_smtp240m;
-
 class CEvent;
 
-class CLinuxRendererGLES : public CBaseRenderer
+struct A10VLQueueItem;
+
+class CLinuxRendererA10 : public CBaseRenderer
 {
 public:
-  CLinuxRendererGLES();
-  virtual ~CLinuxRendererGLES();
+  CLinuxRendererA10();
+  virtual ~CLinuxRendererA10();
 
-  virtual void Update();
+  virtual void Update(bool bPauseDrawing);
   virtual void SetupScreenshot() {};
 
   bool RenderCapture(CRenderCapture* capture);
 
   // Player functions
-  virtual bool Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags, ERenderFormat format, unsigned extended_formatunsigned, unsigned int orientation);
-  virtual bool IsConfigured() { return m_bConfigured; }
+  virtual bool         Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags, ERenderFormat format, unsigned extended_formatunsigned, unsigned int orientation);
+  virtual bool         IsConfigured() { return m_bConfigured; }
   virtual int          GetImage(YV12Image *image, int source = AUTOSOURCE, bool readonly = false);
   virtual void         ReleaseImage(int source, bool preserve = false);
   virtual void         FlipPage(int source);
   virtual unsigned int PreInit();
   virtual void         UnInit();
   virtual void         Reset(); /* resets renderer after seek for example */
-  virtual void         Flush();
   virtual void         ReorderDrawPoints();
-  virtual void         ReleaseBuffer(int idx);
-  virtual void         SetBufferSize(int numBuffers) { m_NumYV12Buffers = numBuffers; }
-  virtual bool         IsGuiLayer();
 
   virtual void RenderUpdate(bool clear, DWORD flags = 0, DWORD alpha = 255);
 
@@ -161,109 +151,49 @@ public:
 
   virtual EINTERLACEMETHOD AutoInterlaceMethod();
 
-  virtual CRenderInfo GetRenderInfo();
+  virtual std::vector<ERenderFormat> SupportedFormats() { return m_formats; }
 
-#ifdef HAVE_LIBOPENMAX
-  virtual void         AddProcessor(COpenMax* openMax, DVDVideoPicture *picture, int index);
-#endif
-#ifdef HAVE_VIDEOTOOLBOXDECODER
-  virtual void         AddProcessor(struct __CVBuffer *cvBufferRef, int index);
-#endif
-#ifdef HAS_LIBSTAGEFRIGHT
-  virtual void         AddProcessor(CDVDVideoCodecStageFright* stf, EGLImageKHR eglimg, int index);
-#endif
-#if defined(TARGET_ANDROID)
-  // mediaCodec
-  virtual void         AddProcessor(CDVDMediaCodecInfo *mediacodec, int index);
-#endif
-#ifdef HAS_IMXVPU
-  virtual void         AddProcessor(CDVDVideoCodecIMXBuffer *codecinfo, int index);
-#endif
-#ifdef HAVE_LIBVDPAU
-  virtual void         AddProcessor(VDPAU::CVdpauRenderPicture* vdpau, int index);
-#endif
+  virtual void AddProcessor(struct A10VLQueueItem *pVidBuff);
 
 protected:
   virtual void Render(DWORD flags, int index);
-  void RenderUpdateVideo(bool clear, DWORD flags = 0, DWORD alpha = 255);
 
+  virtual void ManageTextures();
   int  NextYV12Texture();
   virtual bool ValidateRenderTarget();
   virtual void LoadShaders(int field=FIELD_FULL);
-  virtual void ReleaseShaders();
   void SetTextureFilter(GLenum method);
   void UpdateVideoFilter();
 
   // textures
-  void (CLinuxRendererGLES::*m_textureUpload)(int index);
-  void (CLinuxRendererGLES::*m_textureDelete)(int index);
-  bool (CLinuxRendererGLES::*m_textureCreate)(int index);
+  void (CLinuxRendererA10::*m_textureUpload)(int index);
+  void (CLinuxRendererA10::*m_textureDelete)(int index);
+  bool (CLinuxRendererA10::*m_textureCreate)(int index);
 
   void UploadYV12Texture(int index);
   void DeleteYV12Texture(int index);
   bool CreateYV12Texture(int index);
 
-  void UploadNV12Texture(int index);
-  void DeleteNV12Texture(int index);
-  bool CreateNV12Texture(int index);
-
-  void UploadVDPAUTexture(int index);
-  void DeleteVDPAUTexture(int index);
-  bool CreateVDPAUTexture(int index);
-#if 1
-  void UploadVDPAUTexture420(int index);
-  void DeleteVDPAUTexture420(int index);
-  bool CreateVDPAUTexture420(int index);
-#endif
-  
-  void UploadCVRefTexture(int index);
-  void DeleteCVRefTexture(int index);
-  bool CreateCVRefTexture(int index);
-
   void UploadBYPASSTexture(int index);
   void DeleteBYPASSTexture(int index);
   bool CreateBYPASSTexture(int index);
-
-  void UploadEGLIMGTexture(int index);
-  void DeleteEGLIMGTexture(int index);
-  bool CreateEGLIMGTexture(int index);
-
-  void UploadSurfaceTexture(int index);
-  void DeleteSurfaceTexture(int index);
-  bool CreateSurfaceTexture(int index);
-
-  void UploadOpenMaxTexture(int index);
-  void DeleteOpenMaxTexture(int index);
-  bool CreateOpenMaxTexture(int index);
-
-  void UploadIMXMAPTexture(int index);
-  void DeleteIMXMAPTexture(int index);
-  bool CreateIMXMAPTexture(int index);
 
   void CalculateTextureSourceRects(int source, int num_planes);
 
   // renderers
   void RenderMultiPass(int index, int field);     // multi pass glsl renderer
   void RenderSinglePass(int index, int field);    // single pass glsl renderer
-  void RenderSoftware(int index, int field);      // single pass s/w yuv2rgb renderer
-  void RenderOpenMax(int index, int field);       // OpenMAX rgb texture
-  void RenderEglImage(int index, int field);       // Android OES texture
-  void RenderCoreVideoRef(int index, int field);  // CoreVideo reference
-  void RenderSurfaceTexture(int index, int field);// MediaCodec rendering using SurfaceTexture
-  void RenderIMXMAPTexture(int index, int field); // IMXMAP rendering
-  void RenderVDPAU(int index, int field);
-  void RenderProgressiveWeave(int index, int field);
 
   CFrameBufferObject m_fbo;
 
   int m_iYV12RenderBuffer;
-  int m_NumYV12Buffers;
   int m_iLastRenderBuffer;
 
   bool m_bConfigured;
   bool m_bValidated;
   std::vector<ERenderFormat> m_formats;
   bool m_bImageReady;
+  ERenderFormat m_format;
   GLenum m_textureTarget;
   unsigned short m_renderMethod;
   unsigned short m_oldRenderMethod;
@@ -286,10 +216,6 @@ protected:
     unsigned texwidth;
     unsigned texheight;
 
-    //pixels per texel
-    unsigned pixpertex_x;
-    unsigned pixpertex_y;
-
     unsigned flipindex;
   };
 
@@ -298,49 +224,24 @@ protected:
 
   struct YUVBUFFER
   {
-    YUVBUFFER();
-   ~YUVBUFFER();
-
     YUVFIELDS fields;
     YV12Image image;
     unsigned  flipindex; /* used to decide if this has been uploaded */
 
-#ifdef HAVE_LIBOPENMAX
-    OpenMaxVideoBufferHolder *openMaxBufferHolder;
-#endif
-#ifdef HAVE_VIDEOTOOLBOXDECODER
-    struct __CVBuffer *cvBufferRef;
-#endif
-#ifdef HAS_LIBSTAGEFRIGHT
-    CDVDVideoCodecStageFright* stf;
-    EGLImageKHR eglimg;
-#endif
-#if defined(TARGET_ANDROID)
-    // mediacodec
-    CDVDMediaCodecInfo *mediacodec;
-#endif
-#ifdef HAS_IMXVPU
-    CDVDVideoCodecIMXBuffer *IMXBuffer;
-#endif
-#ifdef HAVE_LIBVDPAU
-    VDPAU::CVdpauRenderPicture *vdpau;
-    unsigned long frame_num;
-#endif
+    A10VLQueueItem *a10buffer;
   };
-
-  typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];
 
   // YV12 decoder textures
   // field index 0 is full image, 1 is odd scanlines, 2 is even scanlines
-  YUVBUFFERS m_buffers;
+  YUVBUFFER m_buffers[NUM_BUFFERS];
 
   void LoadPlane( YUVPLANE& plane, int type, unsigned flipindex
                 , unsigned width,  unsigned height
-                , unsigned int stride, int bpp, void* data );
+                , int stride, void* data );
 
-  Shaders::BaseYUV2RGBShader     *m_pYUVProgShader;
-  Shaders::BaseYUV2RGBShader     *m_pYUVBobShader;
+  Shaders::BaseYUV2RGBShader     *m_pYUVShader;
   Shaders::BaseVideoFilterShader *m_pVideoFilterShader;
+
   ESCALINGMETHOD m_scalingMethod;
   ESCALINGMETHOD m_scalingMethodGui;
 
@@ -352,11 +253,8 @@ protected:
   // clear colour for "black" bars
   float m_clearColour;
 
-  // software scale libraries (fallback if required gl version is not available)
-  struct SwsContext *m_sw_context;
-  BYTE	      *m_rgbBuffer;  // if software scale is used, this will hold the result image
-  unsigned int m_rgbBufferSize;
-  float        m_textureMatrix[16];
+  CEvent* m_eventTexturesDone[NUM_BUFFERS];
+
 };
 
 
@@ -370,6 +268,46 @@ inline int NP2( unsigned x )
     x |= x >> 16;
     return ++x;
 }
+#endif
+
+/*
+ * Video layer functions
+ */
+
+#define DISPQS 24
+
+bool A10VLInit(int &width, int &height, double &refreshRate);
+
+void A10VLExit();
+
+#if not defined (HAVE_LIBVDPAU)
+typedef void (*A10VLCALLBACK)(void *callbackpriv, void *pictpriv, cedarv_picture_t &pict); //cleanup function
+
+struct A10VLQueueItem
+{
+  int               decnr;
+  A10VLCALLBACK     callback;
+  void             *callbackpriv;
+  void             *pictpriv;
+  cedarv_picture_t  pict;
+};
+
+
+void A10VLHide();
+
+void A10VLWaitVSYNC();
+
+A10VLQueueItem *A10VLPutQueue(A10VLCALLBACK     callback,
+                              void             *callbackpriv,
+                              void             *pictpriv,
+                              cedarv_picture_t &pict);
+
+void A10VLFreeQueue();
+
+void A10VLDisplayQueueItem(A10VLQueueItem *pItem, CRect &srcRect, CRect &dstRect);
+
+int  A10VLDisplayPicture(cedarv_picture_t &pict, int refnr, CRect &srcRect, CRect &dstRect);
+
 #endif
 
 #endif

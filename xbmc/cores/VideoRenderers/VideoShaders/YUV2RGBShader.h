@@ -87,7 +87,6 @@ namespace Shaders {
 
     virtual void SetMatrices(GLfloat *p, GLfloat *m) { m_proj = p; m_model = m; }
     virtual void SetAlpha(GLfloat alpha)             { m_alpha = alpha; }
-    
 #endif
 
   protected:
@@ -121,7 +120,7 @@ namespace Shaders {
     GLint m_hProj;
     GLint m_hModel;
     GLint m_hAlpha;
-    
+
     GLfloat *m_proj;
     GLfloat *m_model;
     GLfloat  m_alpha;

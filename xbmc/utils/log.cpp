@@ -198,20 +198,19 @@ void CLog::PrintDebugString(const std::string& line)
 
 bool CLog::WriteLogString(int logLevel, const std::string& logString)
 {
-  static const char* prefixFormat = "%02.2d:%02.2d:%02.2d:%03.3d T:%"PRIu64" %7s: ";
+  static const char* prefixFormat = "%02.2d:%02.2d:%02.2d T:%" PRIu64" %7s: ";
 
   std::string strData(logString);
   /* fixup newline alignment, number of spaces should equal prefix length */
   StringUtils::Replace(strData, "\n", "\n                                            ");
 
-  int hour, minute, second, millisec;
-  s_globals.m_platform.GetCurrentLocalTime(hour, minute, second, millisec);
+  int hour, minute, second;
+  s_globals.m_platform.GetCurrentLocalTime(hour, minute, second);
   
   strData = StringUtils::Format(prefixFormat,
                                   hour,
                                   minute,
                                   second,
-                                  millisec,
                                   (uint64_t)CThread::GetCurrentThreadId(),
                                   levelNames[logLevel]) + strData;
 

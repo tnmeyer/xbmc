@@ -168,7 +168,11 @@ bool CCedarTexture::LoadFromFileInternal(const std::string& texturePath, unsigne
       CSingleLock lock(m_critSection);
       m_fallback_gl = false;
       
-      cedarLoadMem(m_jpgHandle, reinterpret_cast<uint8_t*>(buf.get()), buf.size());
+      if (!cedarLoadMem(m_jpgHandle, reinterpret_cast<uint8_t*>(buf.get()), buf.size()))
+      {
+          m_fallback_gl = true;
+          return CGLTexture::LoadFromFileInternal(texturePath, maxWidth, maxHeight, requirePixels, strMimeType);
+      }
       
       bool okay = false;
       int orientation = 0;

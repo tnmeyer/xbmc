@@ -64,6 +64,17 @@
 #include "settings/VideoSettings.h"
 #include "utils/StringUtils.h"
 
+static DVDCodecAvailableType g_vdpau_available[] = {
+  { AV_CODEC_ID_H263, CSettings::SETTING_VIDEOPLAYER_USEVDPAUMPEG4.c_str() },
+  { AV_CODEC_ID_H264, CSettings::SETTING_VIDEOPLAYER_USEVDPAUH264.c_str() },
+  { AV_CODEC_ID_H265, CSettings::SETTING_VIDEOPLAYER_USEVDPAUH265.c_str() },
+  { AV_CODEC_ID_MPEG4, CSettings::SETTING_VIDEOPLAYER_USEVDPAUMPEG4.c_str() },
+  { AV_CODEC_ID_WMV3, CSettings::SETTING_VIDEOPLAYER_USEVDPAUVC1.c_str() },
+  { AV_CODEC_ID_VC1, CSettings::SETTING_VIDEOPLAYER_USEVDPAUVC1.c_str() },
+  { AV_CODEC_ID_MPEG2VIDEO, CSettings::SETTING_VIDEOPLAYER_USEVDPAUMPEG2.c_str() },
+};
+static const size_t settings_count = sizeof(g_vdpau_available) / sizeof(DVDCodecAvailableType);
+
 CDVDVideoCodec* CDVDFactoryCodec::OpenCodec(CDVDVideoCodec* pCodec, CDVDStreamInfo &hints, CDVDCodecOptions &options )
 {
   try
@@ -206,6 +217,13 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, const C
      // If dvd is an mpeg2 and hint.stills
      if ( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
   }
+#if defined(HAVE_LIBVDPAU)
+  if ((hint.codec == AV_CODEC_ID_MPEG2VIDEO || hint.codec == AV_CODEC_ID_MPEG1VIDEO))
+  {
+     if (CDVDVideoCodec::IsCodecDisabled(g_vdpau_available, settings_count, hint.codec))
+         if ( (pCodec = OpenCodec(new CDVDVideoCodecLibMpeg2(), hint, options)) ) return pCodec;
+  }
+#endif
 
 #if defined(HAS_LIBAMCODEC)
   // amcodec can handle dvd playback.
@@ -337,7 +355,6 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, const C
       }
     }
 #endif
-
 
   // try to decide if we want to try halfres decoding
 #if !defined(TARGET_POSIX) && !defined(TARGET_WINDOWS)

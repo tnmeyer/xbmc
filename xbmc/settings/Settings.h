@@ -121,6 +121,8 @@ public:
   static const std::string SETTING_VIDEOPLAYER_USEMEDIACODECSURFACE;
   static const std::string SETTING_VIDEOPLAYER_USEVDPAU;
   static const std::string SETTING_VIDEOPLAYER_USEVDPAUMIXER;
+  static const std::string SETTING_VIDEOPLAYER_USEVDPAUH264;
+  static const std::string SETTING_VIDEOPLAYER_USEVDPAUH265;
   static const std::string SETTING_VIDEOPLAYER_USEVDPAUMPEG2;
   static const std::string SETTING_VIDEOPLAYER_USEVDPAUMPEG4;
   static const std::string SETTING_VIDEOPLAYER_USEVDPAUVC1;

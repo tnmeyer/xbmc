@@ -61,6 +61,8 @@ using namespace VDPAU;
 // settings codecs mapping
 DVDCodecAvailableType g_vdpau_available[] = {
   { AV_CODEC_ID_H263, CSettings::SETTING_VIDEOPLAYER_USEVDPAUMPEG4.c_str() },
+  { AV_CODEC_ID_H264, CSettings::SETTING_VIDEOPLAYER_USEVDPAUH264.c_str() },
+  { AV_CODEC_ID_H265, CSettings::SETTING_VIDEOPLAYER_USEVDPAUH265.c_str() },
   { AV_CODEC_ID_MPEG4, CSettings::SETTING_VIDEOPLAYER_USEVDPAUMPEG4.c_str() },
   { AV_CODEC_ID_WMV3, CSettings::SETTING_VIDEOPLAYER_USEVDPAUVC1.c_str() },
   { AV_CODEC_ID_VC1, CSettings::SETTING_VIDEOPLAYER_USEVDPAUVC1.c_str() },

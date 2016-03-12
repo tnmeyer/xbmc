@@ -6525,6 +6525,28 @@ msgid "Allow hardware acceleration - MediaCodec (Surface)"
 msgstr ""
 
 #: system/settings/settings.xml
+msgctxt "#33441"
+msgid "Use H.264 VDPAU"
+msgstr ""
+
+#. Description of setting "Videos -> Playback -> Use MPEG-2 VDPAU" with label #13441
+#: system/settings/settings.xml
+msgctxt "#33442"
+msgid "Enable this option to use hardware acceleration for H.264 codec. If disabled the CPU will be used instead."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#33443"
+msgid "Use H.265/HEVC VDPAU"
+msgstr ""
+
+#. Description of setting "Videos -> Playback -> Use MPEG-2 VDPAU" with label #13441
+#: system/settings/settings.xml
+msgctxt "#33444"
+msgid "Enable this option to use hardware acceleration for H.265/HEVC codecs. If disabled the CPU will be used instead."
+msgstr ""
+
+#: system/settings/settings.xml
 msgctxt "#13441"
 msgid "Use MPEG-2 VDPAU"
 msgstr ""

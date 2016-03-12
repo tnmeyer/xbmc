@@ -26,6 +26,7 @@
 #include "guilib/gui3d.h"
 #include "utils/StringUtils.h"
 #include "guilib/GraphicContext.h"
+#include "utils/SysfsUtils.h"
 #include "drv_display_sun4i.h"
 
 #if defined(ALLWINNERA10) && !defined(TARGET_ANDROID)
@@ -267,7 +268,13 @@ CEGLNativeTypeSunxi::~CEGLNativeTypeSunxi()
 bool CEGLNativeTypeSunxi::CheckCompatibility()
 {
 #if defined(ALLWINNERA10) && !defined(TARGET_ANDROID)
-  return true;
+  std::string name;
+  std::string modalias = "/sys/class/graphics/fb0/device/modalias";
+
+  SysfsUtils::GetString(modalias, name);
+  StringUtils::Trim(name);
+  if (name == "platform:disp")
+    return true;
 #endif
   return false;
 }

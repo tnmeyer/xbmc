@@ -1,6 +1,6 @@
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/allcodecs.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/allcodecs.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/allcodecs.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/allcodecs.c	2016-02-09 20:23:36.764950678 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/allcodecs.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/allcodecs.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/allcodecs.c	2016-03-12 15:43:56.035325983 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/allcodecs.c	2016-03-12 15:44:16.391323642 +0100
 @@ -113,6 +113,7 @@
      REGISTER_HWACCEL(WMV3_DXVA2,        wmv3_dxva2);
      REGISTER_HWACCEL(WMV3_VAAPI,        wmv3_vaapi);
@@ -20,9 +20,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/allcodecs.c FFmpeg-2.8.5-Jarvis-rc1
      REGISTER_DECODER(MSRLE,             msrle);
      REGISTER_DECODER(MSS1,              mss1);
      REGISTER_DECODER(MSS2,              mss2);
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/avcodec.h FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/avcodec.h
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/avcodec.h	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/avcodec.h	2016-02-09 20:23:03.572670785 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/avcodec.h FFmpeg-2.8.6-Jarvis-16.0/libavcodec/avcodec.h
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/avcodec.h	2016-03-12 15:43:55.968661507 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/avcodec.h	2016-03-12 15:44:16.391323642 +0100
 @@ -122,6 +122,7 @@
      AV_CODEC_ID_MSMPEG4V1,
      AV_CODEC_ID_MSMPEG4V2,
@@ -44,9 +44,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/avcodec.h FFmpeg-2.8.5-Jarvis-rc1.n
       * it is terminated by -1 as 0 is a valid format, the formats are ordered by quality.
       * The first is always the native one.
       * @note The callback may be called again immediately if initialization for
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/h263dec.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/h263dec.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/h263dec.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/h263dec.c	2016-02-09 20:24:55.705770616 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/h263dec.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/h263dec.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/h263dec.c	2016-03-12 15:43:55.978661177 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/h263dec.c	2016-03-12 15:44:16.394656865 +0100
 @@ -161,7 +161,11 @@
  {
      int pos = (get_bits_count(&s->gb) + 7) >> 3;
@@ -79,9 +79,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/h263dec.c FFmpeg-2.8.5-Jarvis-rc1.n
          ff_vdpau_mpeg4_decode_picture(avctx->priv_data, s->gb.buffer, s->gb.buffer_end - s->gb.buffer);
          goto frame_end;
      }
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/Makefile FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/Makefile
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/Makefile	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/Makefile	2016-02-09 20:24:14.363754911 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/Makefile FFmpeg-2.8.6-Jarvis-16.0/libavcodec/Makefile
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/Makefile	2016-03-12 15:43:55.955328610 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/Makefile	2016-03-12 15:44:16.394656865 +0100
 @@ -706,6 +706,7 @@
  
  OBJS-$(CONFIG_H263_VAAPI_HWACCEL)         += vaapi_mpeg4.o
@@ -90,9 +90,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/Makefile FFmpeg-2.8.5-Jarvis-rc1.ne
  OBJS-$(CONFIG_H263_VIDEOTOOLBOX_HWACCEL)  += videotoolbox.o
  OBJS-$(CONFIG_H264_D3D11VA_HWACCEL)       += dxva2_h264.o
  OBJS-$(CONFIG_H264_DXVA2_HWACCEL)         += dxva2_h264.o
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/mpeg12dec.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/mpeg12dec.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/mpeg12dec.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/mpeg12dec.c	2016-02-09 20:23:03.576004012 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/mpeg12dec.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/mpeg12dec.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/mpeg12dec.c	2016-03-12 15:43:55.998660519 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/mpeg12dec.c	2016-03-12 15:44:16.394656865 +0100
 @@ -1187,7 +1187,7 @@
      AV_PIX_FMT_XVMC,
  #endif
@@ -111,9 +111,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/mpeg12dec.c FFmpeg-2.8.5-Jarvis-rc1
  #endif
  #if CONFIG_MPEG2_VDPAU_HWACCEL
      AV_PIX_FMT_VDPAU,
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/mpeg4videodec.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/mpeg4videodec.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/mpeg4videodec.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/mpeg4videodec.c	2016-02-09 20:23:03.576004012 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/mpeg4videodec.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/mpeg4videodec.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/mpeg4videodec.c	2016-03-12 15:43:55.998660519 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/mpeg4videodec.c	2016-03-12 15:44:16.397990089 +0100
 @@ -34,6 +34,7 @@
  #include "h263.h"
  #include "thread.h"
@@ -183,9 +183,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/mpeg4videodec.c FFmpeg-2.8.5-Jarvis
      .priv_class     = &mpeg4_vdpau_class,
  };
  #endif
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/msmpeg4dec.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/msmpeg4dec.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/msmpeg4dec.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/msmpeg4dec.c	2016-02-09 20:27:54.416712690 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/msmpeg4dec.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/msmpeg4dec.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/msmpeg4dec.c	2016-03-12 15:43:56.001993746 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/msmpeg4dec.c	2016-03-12 15:44:16.397990089 +0100
 @@ -915,6 +915,18 @@
      return 0;
  }
@@ -325,9 +325,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/msmpeg4dec.c FFmpeg-2.8.5-Jarvis-rc
 +};
 +
 +#endif
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/old_codec_ids.h FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/old_codec_ids.h
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/old_codec_ids.h	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/old_codec_ids.h	2016-02-09 20:23:03.576004012 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/old_codec_ids.h FFmpeg-2.8.6-Jarvis-16.0/libavcodec/old_codec_ids.h
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/old_codec_ids.h	2016-03-12 15:43:56.001993746 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/old_codec_ids.h	2016-03-12 15:44:16.397990089 +0100
 @@ -49,6 +49,7 @@
      CODEC_ID_MSMPEG4V1,
      CODEC_ID_MSMPEG4V2,
@@ -336,9 +336,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/old_codec_ids.h FFmpeg-2.8.5-Jarvis
      CODEC_ID_WMV1,
      CODEC_ID_WMV2,
      CODEC_ID_H263P,
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/utils.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/utils.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/utils.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/utils.c	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/utils.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/utils.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/utils.c	2016-03-12 15:43:56.021993089 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/utils.c	2016-03-12 15:46:51.739551737 +0100
 @@ -1152,8 +1152,8 @@
  
  enum AVPixelFormat avcodec_default_get_format(struct AVCodecContext *s, const enum AVPixelFormat *fmt)
@@ -350,7 +350,20 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/utils.c FFmpeg-2.8.5-Jarvis-rc1.new
      return fmt[0];
  }
  
-@@ -2447,6 +2447,7 @@
+@@ -1250,8 +1250,10 @@
+             break;
+ #endif
+ 
+-        if (!setup_hwaccel(avctx, ret, desc->name))
+-            break;
++        /* Only initialize hardware acceleration if we actually have set up a context for it */
++        if (avctx->hwaccel_context)
++            if (!setup_hwaccel(avctx, ret, desc->name))
++                break;
+ 
+         /* Remove failed hwaccel from choices */
+         for (n = 0; choices[n] != ret; n++)
+@@ -2447,6 +2449,7 @@
              ret = avctx->codec->decode(avctx, picture, got_picture_ptr,
                                         &tmp);
              picture->pkt_dts = avpkt->dts;
@@ -358,9 +371,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/utils.c FFmpeg-2.8.5-Jarvis-rc1.new
  
              if(!avctx->has_b_frames){
                  av_frame_set_pkt_pos(picture, avpkt->pos);
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vc1dec.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vc1dec.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vc1dec.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vc1dec.c	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vc1dec.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vc1dec.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vc1dec.c	2016-03-12 15:43:56.025326312 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vc1dec.c	2016-03-12 15:44:16.397990089 +0100
 @@ -1171,7 +1171,7 @@
      .close          = ff_vc1_decode_end,
      .decode         = vc1_decode_frame,
@@ -379,9 +392,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vc1dec.c FFmpeg-2.8.5-Jarvis-rc1.ne
      .profiles       = NULL_IF_CONFIG_SMALL(profiles)
  };
  #endif
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau.c	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau.c	2016-03-12 15:43:56.025326312 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau.c	2016-03-12 15:44:16.397990089 +0100
 @@ -676,9 +676,11 @@
  
      switch (s->pict_type) {
@@ -394,9 +407,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau.c FFmpeg-2.8.5-Jarvis-rc1.new
          render->info.mpeg4.vop_coding_type        = 2;
          // no break here, going to set forward prediction
      case AV_PICTURE_TYPE_P:
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau.h FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau.h
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau.h	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau.h	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau.h FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau.h
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau.h	2016-03-12 15:43:56.025326312 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau.h	2016-03-12 15:44:16.397990089 +0100
 @@ -101,6 +101,7 @@
       * Set by the user.
       */
@@ -405,9 +418,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau.h FFmpeg-2.8.5-Jarvis-rc1.new
  
  #if FF_API_BUFS_VDPAU
      /**
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_internal.h FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau_internal.h
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_internal.h	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau_internal.h	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau_internal.h FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau_internal.h
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau_internal.h	2016-03-12 15:43:56.025326312 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau_internal.h	2016-03-12 15:44:16.397990089 +0100
 @@ -123,6 +123,8 @@
  int ff_vdpau_common_end_frame(AVCodecContext *avctx, AVFrame *frame,
                                struct vdpau_picture_context *pic);
@@ -417,9 +430,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_internal.h FFmpeg-2.8.5-Jarvi
  int ff_vdpau_add_buffer(struct vdpau_picture_context *pic, const uint8_t *buf,
                          uint32_t buf_size);
  
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_mpeg4.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau_mpeg4.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_mpeg4.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau_mpeg4.c	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau_mpeg4.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau_mpeg4.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau_mpeg4.c	2016-03-12 15:43:56.025326312 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau_mpeg4.c	2016-03-12 15:44:16.397990089 +0100
 @@ -28,6 +28,8 @@
  #include "vdpau.h"
  #include "vdpau_internal.h"
@@ -523,9 +536,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_mpeg4.c FFmpeg-2.8.5-Jarvis-r
      .frame_priv_data_size = sizeof(struct vdpau_picture_context),
      .init           = vdpau_mpeg4_init,
      .uninit         = ff_vdpau_common_uninit,
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_msmpeg4.c FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau_msmpeg4.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_msmpeg4.c	1970-01-01 01:00:00.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavcodec/vdpau_msmpeg4.c	2016-02-09 20:23:03.579337240 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau_msmpeg4.c FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau_msmpeg4.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavcodec/vdpau_msmpeg4.c	1970-01-01 01:00:00.000000000 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavcodec/vdpau_msmpeg4.c	2016-03-12 15:44:16.397990089 +0100
 @@ -0,0 +1,146 @@
 +/*
 + * MPEG-4 Part 2 / H.263 decode acceleration through VDPAU
@@ -673,10 +686,10 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavcodec/vdpau_msmpeg4.c FFmpeg-2.8.5-Jarvis
 +//    .set_video_header = vdpau_msmpeg4_set_video_header,
 +};
 +
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavformat/mov.c FFmpeg-2.8.5-Jarvis-rc1.new/libavformat/mov.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavformat/mov.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavformat/mov.c	2016-02-09 20:23:03.582670468 +0100
-@@ -3037,6 +3037,7 @@
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavformat/mov.c FFmpeg-2.8.6-Jarvis-16.0/libavformat/mov.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavformat/mov.c	2016-03-12 15:43:56.058658548 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavformat/mov.c	2016-03-12 15:44:16.397990089 +0100
+@@ -3047,6 +3047,7 @@
              return ret;
      }
  
@@ -684,7 +697,7 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavformat/mov.c FFmpeg-2.8.5-Jarvis-rc1.new/
      switch (st->codec->codec_id) {
  #if CONFIG_H261_DECODER
      case AV_CODEC_ID_H261:
-@@ -3051,6 +3052,7 @@
+@@ -3061,6 +3062,7 @@
          st->codec->height= 0;
          break;
      }
@@ -692,9 +705,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavformat/mov.c FFmpeg-2.8.5-Jarvis-rc1.new/
  
      /* Do not need those anymore. */
      av_freep(&sc->chunk_offsets);
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/arm/intmath.h FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/arm/intmath.h
---- FFmpeg-2.8.5-Jarvis-rc1/libavutil/arm/intmath.h	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/arm/intmath.h	2016-02-09 20:23:03.582670468 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/arm/intmath.h FFmpeg-2.8.6-Jarvis-16.0/libavutil/arm/intmath.h
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/arm/intmath.h	2016-03-12 15:43:56.138655919 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavutil/arm/intmath.h	2016-03-12 15:44:16.401323314 +0100
 @@ -69,7 +69,7 @@
      __asm__ ("ssat %0, %2, %1" : "=r"(x) : "r"(a), "i"(p+1));
      return x;
@@ -712,9 +725,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/arm/intmath.h FFmpeg-2.8.5-Jarvis-rc
  
  #define av_sat_add32 av_sat_add32_arm
  static av_always_inline int av_sat_add32_arm(int a, int b)
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/pixdesc.c FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/pixdesc.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavutil/pixdesc.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/pixdesc.c	2016-02-09 20:23:03.582670468 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/pixdesc.c FFmpeg-2.8.6-Jarvis-16.0/libavutil/pixdesc.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/pixdesc.c	2016-03-12 15:43:56.141989145 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavutil/pixdesc.c	2016-03-12 15:44:16.401323314 +0100
 @@ -963,6 +963,30 @@
          .log2_chroma_h = 1,
          .flags = AV_PIX_FMT_FLAG_HWACCEL,
@@ -746,9 +759,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/pixdesc.c FFmpeg-2.8.5-Jarvis-rc1.ne
  #endif
      [AV_PIX_FMT_RGB48BE] = {
          .name = "rgb48be",
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/pixfmt.h FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/pixfmt.h
---- FFmpeg-2.8.5-Jarvis-rc1/libavutil/pixfmt.h	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/pixfmt.h	2016-02-09 20:23:03.582670468 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/pixfmt.h FFmpeg-2.8.6-Jarvis-16.0/libavutil/pixfmt.h
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/pixfmt.h	2016-03-12 15:43:56.141989145 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavutil/pixfmt.h	2016-03-12 15:44:16.401323314 +0100
 @@ -107,6 +107,10 @@
      AV_PIX_FMT_VDPAU_MPEG2,///< MPEG-2 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
      AV_PIX_FMT_VDPAU_WMV3,///< WMV3 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
@@ -760,9 +773,9 @@ diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/pixfmt.h FFmpeg-2.8.5-Jarvis-rc1.new
  #endif
      AV_PIX_FMT_RGB48BE,   ///< packed RGB 16:16:16, 48bpp, 16R, 16G, 16B, the 2-byte value for each R/G/B component is stored as big-endian
      AV_PIX_FMT_RGB48LE,   ///< packed RGB 16:16:16, 48bpp, 16R, 16G, 16B, the 2-byte value for each R/G/B component is stored as little-endian
-diff -rNu FFmpeg-2.8.5-Jarvis-rc1/libavutil/utils.c FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/utils.c
---- FFmpeg-2.8.5-Jarvis-rc1/libavutil/utils.c	2016-01-15 18:25:16.000000000 +0100
-+++ FFmpeg-2.8.5-Jarvis-rc1.new/libavutil/utils.c	2016-02-09 20:23:03.582670468 +0100
+diff -rNu FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/utils.c FFmpeg-2.8.6-Jarvis-16.0/libavutil/utils.c
+--- FFmpeg-2.8.6-Jarvis-16.0.orig/libavutil/utils.c	2016-03-12 15:43:56.141989145 +0100
++++ FFmpeg-2.8.6-Jarvis-16.0/libavutil/utils.c	2016-03-12 15:44:16.401323314 +0100
 @@ -42,7 +42,7 @@
          return LIBAVUTIL_VERSION_INT;
  

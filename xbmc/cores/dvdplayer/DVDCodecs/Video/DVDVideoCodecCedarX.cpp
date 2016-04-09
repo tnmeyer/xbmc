@@ -603,7 +603,7 @@ void CSunxiContext::Render(CCedarXBuffer *buffer, CRect &srcRect, CRect &dstRect
     layera.b_from_screen = 0; //what is this? if enabled all is black
     layera.pipe          = 1;
     //use alpha blend
-    layera.alpha_en      = 0;
+    layera.alpha_en      = 1;
     layera.alpha_val     = 0xff;
     layera.ck_enable     = 0;
     layera.b_trd_out     = 0;
@@ -708,54 +708,13 @@ void CSunxiContext::Render(CCedarXBuffer *buffer, CRect &srcRect, CRect &dstRect
     if (ioctl(g_hdisp, DISP_CMD_LAYER_CK_OFF, args))
       CLog::Log(LOGERROR, "Sunxi-DISP: DISP_CMD_LAYER_CK_OFF failed.\n");
 
-    if ((g_height > 720))
-    {
-      //no tearing at the cost off alpha blending...
-
-      //set colorkey
-      colorkey.ck_min.alpha = 0;
-      colorkey.ck_min.red   = 1;
-      colorkey.ck_min.green = 2;
-      colorkey.ck_min.blue  = 3;
-      colorkey.ck_max = colorkey.ck_min;
-      colorkey.ck_max.alpha = 255;
-      colorkey.red_match_rule   = 2;
-      colorkey.green_match_rule = 2;
-      colorkey.blue_match_rule  = 2;
-
-      args[0] = g_screenid;
-      args[1] = (unsigned long)&colorkey;
-      args[2] = 0;
-      args[3] = 0;
-      if (ioctl(g_hdisp, DISP_CMD_SET_COLORKEY, args))
-        CLog::Log(LOGERROR, "Sunxi-DISP: DISP_CMD_SET_COLORKEY failed.\n");
-
-      //turn on colorkey
-      args[0] = g_screenid;
-      args[1] = g_hlayer;
-      args[2] = 0;
-      args[3] = 0;
-      if (ioctl(g_hdisp, DISP_CMD_LAYER_CK_ON, args))
-        CLog::Log(LOGERROR, "Sunxi-DISP: DISP_CMD_LAYER_CK_ON failed.\n");
-
-      //turn on global alpha (system layer)
-      args[0] = g_screenid;
-      args[1] = g_syslayer;
-      args[2] = 0;
-      args[3] = 0;
-      if (ioctl(g_hdisp, DISP_CMD_LAYER_ALPHA_ON, args))
-        CLog::Log(LOGERROR, "Sunxi-DISP: DISP_CMD_LAYER_ALPHA_ON failed.\n");
-    }
-    else
-    {
-      //turn off global alpha (system layer)
-      args[0] = g_screenid;
-      args[1] = g_syslayer;
-      args[2] = 0;
-      args[3] = 0;
-      if (ioctl(g_hdisp, DISP_CMD_LAYER_ALPHA_OFF, args))
-        CLog::Log(LOGERROR, "Sunxi-DISP: DISP_CMD_LAYER_ALPHA_OFF failed.\n");
-    }
+    //turn off global alpha (system layer)
+    args[0] = g_screenid;
+    args[1] = g_syslayer;
+    args[2] = 0;
+    args[3] = 0;
+    if (ioctl(g_hdisp, DISP_CMD_LAYER_ALPHA_OFF, args))
+      CLog::Log(LOGERROR, "Sunxi-DISP: DISP_CMD_LAYER_ALPHA_OFF failed.\n");
 
     //enable vpp
     args[0] = g_screenid;

@@ -18058,7 +18058,7 @@ msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#60006"
-msgid "Use hardware decoding for VC1 video content"
+msgid "Use hardware decoding for VP8 video content"
 msgstr ""
 
 #: system/settings/settings.xml

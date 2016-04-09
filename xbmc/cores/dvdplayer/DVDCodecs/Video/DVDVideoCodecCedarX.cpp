@@ -48,7 +48,6 @@ CDVDVideoCodecSunxi::CDVDVideoCodecSunxi() :
   m_vp9orhevccodec(false),
   m_bitstream(NULL)
 {
-  
 }
 
 CDVDVideoCodecSunxi::~CDVDVideoCodecSunxi()
@@ -77,7 +76,7 @@ bool CDVDVideoCodecSunxi::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
   switch (hints.codec)
   {
     case AV_CODEC_ID_MPEG1VIDEO:
-      if (CSettings::GetInstance().GetBool("videoplayer.useawmpeg2"))
+      if ((CSettings::GetInstance().GetBool("videoplayer.useawmpeg2")) && (m_hints.width > 799))
       {
         m_pFormatName = "cedarx-mpeg1";
         m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MPEG1;
@@ -86,7 +85,7 @@ bool CDVDVideoCodecSunxi::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
       else { return false; }
     case AV_CODEC_ID_MPEG2VIDEO:
     case AV_CODEC_ID_MPEG2VIDEO_XVMC:
-      if (CSettings::GetInstance().GetBool("videoplayer.useawmpeg2"))
+      if ((CSettings::GetInstance().GetBool("videoplayer.useawmpeg2")) && (m_hints.width > 799))
       {
         m_pFormatName = "cedarx-mpeg2";
         m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MPEG2;
@@ -274,7 +273,7 @@ int CDVDVideoCodecSunxi::Decode(uint8_t *pData, int iSize, double dts, double pt
       pData = m_bitstream->GetConvertBuffer();
       iSize = m_bitstream->GetConvertSize();
     }
-  
+
     ret = RequestVideoStreamBuffer(m_videoCodec, iSize, &buf0,
                                    &buf0Size, &buf1, &buf1Size, 0);
     if(ret < 0)
@@ -299,13 +298,31 @@ int CDVDVideoCodecSunxi::Decode(uint8_t *pData, int iSize, double dts, double pt
     dataInfo.bIsFirstPart = 1;
     dataInfo.bIsLastPart = 1;
     dataInfo.nPts = nPts;
+    dataInfo.nPcr = 0;
 
-    ret = SubmitVideoStreamData(m_videoCodec, &dataInfo, 0);
-    if (ret != 0)
-    {
-      CLog::Log(LOGERROR, "SubmitVideoStreamData() error!");
-      return VC_ERROR;
+    if (nPts != -1) {
+        dataInfo.bValid = 1;
+    } else {
+        dataInfo.bValid = 0;
     }
+    
+    do {
+        int rep_count = 0;
+        ret = SubmitVideoStreamData(m_videoCodec, &dataInfo, 0);
+        if (ret != 0)
+        {
+            rep_count++;
+            if (rep_count > 5) {
+                    CLog::Log(LOGERROR, "SubmitVideoStreamData() error!");
+                    return VC_ERROR;
+            }
+            usleep(5);
+        }
+        else {
+                break;
+             }
+    } while(1);
+
   }
   
   ret = DecodeVideoStream(m_videoCodec, 0, 0, 0, 0);
@@ -380,15 +397,6 @@ bool CDVDVideoCodecSunxi::GetPicture(DVDVideoPicture* pDvdVideoPicture)
   {
     int realWidth  = m_buffer->pPicture->nRightOffset - m_buffer->leftOffset;
     int realHeight = m_buffer->pPicture->nBottomOffset - m_buffer->topOffset;
-
-    // if the offset is not right, we should not use them to compute width and height
-    //FIXME: Why is there a problem with some videos? Is this limited to interlaced MPEG2s?
-    if ((realWidth <= 0) || (realHeight <= 0) ||
-        (m_streamInfo.eCodecFormat == VIDEO_CODEC_FORMAT_MPEG2))
-    {
-      realWidth  = m_buffer->pPicture->nWidth;
-      realHeight = m_buffer->pPicture->nHeight;
-    }
     
     pDvdVideoPicture->pts = (m_buffer->pPicture->nPts > 0) ? 
       (double)m_buffer->pPicture->nPts : DVD_NOPTS_VALUE;
@@ -397,10 +405,20 @@ bool CDVDVideoCodecSunxi::GetPicture(DVDVideoPicture* pDvdVideoPicture)
     pDvdVideoPicture->format = RENDER_FMT_DISP2;
     pDvdVideoPicture->iWidth  = realWidth;
     pDvdVideoPicture->iHeight = realHeight;
-    pDvdVideoPicture->iDisplayWidth  = realWidth;
-    pDvdVideoPicture->iDisplayHeight = realHeight;
+    pDvdVideoPicture->iDisplayWidth  = pDvdVideoPicture->iWidth;
+    pDvdVideoPicture->iDisplayHeight = pDvdVideoPicture->iHeight;
+
+    if (m_hints.aspect > 1.0 && !m_hints.forced_aspect)
+    {
+      pDvdVideoPicture->iDisplayWidth  = ((int)lrint(pDvdVideoPicture->iHeight * m_hints.aspect)) & ~3;
+      if (pDvdVideoPicture->iDisplayWidth > pDvdVideoPicture->iWidth)
+      {
+        pDvdVideoPicture->iDisplayWidth  = pDvdVideoPicture->iWidth;
+        pDvdVideoPicture->iDisplayHeight = ((int)lrint(pDvdVideoPicture->iWidth / m_hints.aspect)) & ~3;
+      }
+    }
+
     pDvdVideoPicture->Disp2Buffer = m_buffer;
-    
     pDvdVideoPicture->color_range  = 0;
     pDvdVideoPicture->color_matrix = 4;
     
@@ -634,7 +652,7 @@ void CSunxiContext::Render(CCedarXBuffer *buffer, CRect &srcRect, CRect &dstRect
       //but should be against the fullscreen area of xbmc
 
       xzoom = (dstRect.x2 - dstRect.x1) / (srcRect.x2 - srcRect.x1);
-      yzoom = (dstRect.y2 - dstRect.y1) / (srcRect.y2 - srcRect.x1);
+      yzoom = (dstRect.y2 - dstRect.y1) / (srcRect.y2 - srcRect.y1);
 
       if (layera.scn_win.x < 0)
       {

@@ -177,47 +177,31 @@ void CEGLNativeTypeSunxi::Initialize()
     break;
   }
 
-  if ((g_height > 720))
-  {
-    //set workmode scaler (system layer)
-    args[0] = g_screenid;
-    args[1] = g_syslayer;
-    args[2] = (unsigned long) (&layera);
-    args[3] = 0;
-    ioctl(g_hdisp, DISP_CMD_LAYER_GET_PARA, args);
-    layera.mode = DISP_LAYER_WORK_MODE_SCALER;
-    args[0] = g_screenid;
-    args[1] = g_syslayer;
-    args[2] = (unsigned long) (&layera);
-    args[3] = 0;
-    ioctl(g_hdisp, DISP_CMD_LAYER_SET_PARA, args);
-  }
-  else
-  {
-    //set workmode normal (system layer)
-    args[0] = g_screenid;
-    args[1] = g_syslayer;
-    args[2] = (unsigned long) (&layera);
-    args[3] = 0;
-    ioctl(g_hdisp, DISP_CMD_LAYER_GET_PARA, args);
-    //source window information
-    layera.src_win.x      = 0;
-    layera.src_win.y      = 0;
-    layera.src_win.width  = g_width;
-    layera.src_win.height = g_height;
-    //screen window information
-    layera.scn_win.x      = 0;
-    layera.scn_win.y      = 0;
-    layera.scn_win.width  = g_width;
-    layera.scn_win.height = g_height;
-    layera.mode = DISP_LAYER_WORK_MODE_NORMAL;
-    args[0] = g_screenid;
-    args[1] = g_syslayer;
-    args[2] = (unsigned long) (&layera);
-    args[3] = 0;
-    ioctl(g_hdisp, DISP_CMD_LAYER_SET_PARA, args);
-
-  }
+  //set workmode normal (system layer)
+  args[0] = g_screenid;
+  args[1] = g_syslayer;
+  args[2] = (unsigned long) (&layera);
+  args[3] = 0;
+  ioctl(g_hdisp, DISP_CMD_LAYER_GET_PARA, args);
+  
+  //source window information
+  layera.src_win.x      = 0;
+  layera.src_win.y      = 0;
+  layera.src_win.width  = g_width;
+  layera.src_win.height = g_height;
+  
+  //screen window information
+  layera.scn_win.x      = 0;
+  layera.scn_win.y      = 0;
+  layera.scn_win.width  = g_width;
+  layera.scn_win.height = g_height;
+  layera.mode = DISP_LAYER_WORK_MODE_NORMAL;
+  
+  args[0] = g_screenid;
+  args[1] = g_syslayer;
+  args[2] = (unsigned long) (&layera);
+  args[3] = 0;
+  ioctl(g_hdisp, DISP_CMD_LAYER_SET_PARA, args);
 
   for (i = 0x65; i <= 0x67; i++)
   {

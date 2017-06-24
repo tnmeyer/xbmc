@@ -35,6 +35,10 @@
 // This has to go into another header file
 #include "cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.h"
 #endif
+#ifdef HAS_CEDARX
+// This has to go into another header file
+#include "cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecCedarX.h"
+#endif
 #include "utils/log.h"
 #include "EGLWrapper.h"
 #include "EGLQuirks.h"
@@ -477,6 +481,9 @@ void CWinSystemEGL::SetVSyncImpl(bool enable)
   }
 #ifdef HAS_IMXVPU
   g_IMXContext.SetVSync(enable);
+#endif
+#ifdef HAS_CEDARX
+  g_SunxiContext.SetVSync(enable);
 #endif
 }
 

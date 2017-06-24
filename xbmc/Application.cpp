@@ -94,6 +94,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "utils/CPUInfo.h"
 #include "utils/SeekHandler.h"
+#include "utils/SysfsUtils.h"
 
 #include "input/KeyboardLayoutManager.h"
 
@@ -1526,6 +1527,16 @@ bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId,
     {
       CSettingBool *useamcodec = (CSettingBool*)setting;
       return useamcodec->SetValue(false);
+    }
+  }
+#endif
+#if defined(HAS_CEDARX)
+  if (setting->GetId() == CSettings::SETTING_VIDEOPLAYER_USECEDARX)
+  {
+    if (!SysfsUtils::Has("/sys/class/cedar_dev/cedar_dev/dev"))
+    {
+      CSettingBool *usecedarx = (CSettingBool*)setting;
+      return usecedarx->SetValue(false);
     }
   }
 #endif

@@ -50,6 +50,7 @@ struct OpenMaxVideoBufferHolder;
 class CDVDMediaCodecInfo;
 class CDVDVideoCodecIMXBuffer;
 class CMMALBuffer;
+class CCedarXBuffer;
 class CDVDAmlogicInfo;
 
 
@@ -94,6 +95,10 @@ struct DVDVideoPicture
 
     struct {
       CMMALBuffer *MMALBuffer;
+    };
+
+    struct {
+      CCedarXBuffer *Disp2Buffer;
     };
 
     struct {

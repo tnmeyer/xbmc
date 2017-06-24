@@ -142,6 +142,7 @@ CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
 	--disable-ffprobe \
 	--disable-ffserver \
 	--disable-doc \
+	--disable-xlib \
 	--enable-gpl \
 	--enable-runtime-cpudetect \
 	--enable-postproc \

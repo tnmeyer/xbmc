@@ -52,6 +52,9 @@
 #if defined(HAS_IMXVPU)
 #include "HwDecRender/RendererIMX.h"
 #endif
+#if defined(HAS_CEDARX)
+#include "HwDecRender/RendererSunxi.h"
+#endif
 #if defined(HAS_LIBAMCODEC)
 #include "HwDecRender/RendererAML.h"
 #endif
@@ -111,6 +114,7 @@ static std::string GetRenderFormatName(ERenderFormat format)
     case RENDER_FMT_IMXMAP:    return "IMXMAP";
     case RENDER_FMT_MMAL:      return "MMAL";
     case RENDER_FMT_AML:       return "AMLCODEC";
+    case RENDER_FMT_DISP2:     return "DISP2";
     case RENDER_FMT_NONE:      return "NONE";
   }
   return "UNKNOWN";
@@ -580,6 +584,12 @@ void CRenderManager::CreateRenderer()
     {
 #if defined(HAS_LIBAMCODEC)
       m_pRenderer = new CRendererAML;
+#endif
+    }
+    else if (m_format == RENDER_FMT_DISP2)
+    {
+#if defined(HAS_CEDARX)
+      m_pRenderer = new CRendererSunxi;
 #endif
     }
     else if (m_format != RENDER_FMT_NONE)
@@ -1148,6 +1158,7 @@ int CRenderManager::AddVideoPicture(DVDVideoPicture& pic)
   || pic.format == RENDER_FMT_AML
   || pic.format == RENDER_FMT_IMXMAP
   || pic.format == RENDER_FMT_MMAL
+  || pic.format == RENDER_FMT_DISP2
   || m_pRenderer->IsPictureHW(pic))
   {
     m_pRenderer->AddVideoPictureHW(pic, index);

@@ -192,6 +192,84 @@
           </updates>
           <control type="toggle" />
         </setting>
+        <setting id="videoplayer.usecedarx" type="boolean" label="60010" help="60002">
+          <level>2</level>
+          <default>true</default>
+          <updates>
+            <update type="change" />
+          </updates>
+          <control type="toggle" />
+        </setting>
+        <setting id="videoplayer.useawmpeg2" type="boolean" parent="videoplayer.usecedarx" label="60003" help="60002">
+          <level>3</level>
+          <default>false</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="videoplayer.usecedarx" operator="is">true</condition>
+            </dependency>
+            <dependency type="visible" on="property" name="codecoptionvisible" setting="videoplayer.useawmpeg2" operator="is">true</dependency>
+          </dependencies>
+          <updates>
+            <update type="change" />
+          </updates>
+          <control type="toggle" />
+        </setting>
+        <setting id="videoplayer.useawh264" type="boolean" parent="videoplayer.usecedarx" label="60004" help="60002">
+          <level>3</level>
+          <default>false</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="videoplayer.usecedarx" operator="is">true</condition>
+            </dependency>
+            <dependency type="visible" on="property" name="codecoptionvisible" setting="videoplayer.useawh264" operator="is">true</dependency>
+          </dependencies>
+          <updates>
+            <update type="change" />
+          </updates>
+          <control type="toggle" />
+        </setting>
+        <setting id="videoplayer.useawmpeg4" type="boolean" parent="videoplayer.usecedarx" label="60005" help="60002">
+          <level>3</level>
+          <default>false</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="videoplayer.usecedarx" operator="is">true</condition>
+            </dependency>
+            <dependency type="visible" on="property" name="codecoptionvisible" setting="videoplayer.useawmpeg4" operator="is">true</dependency>
+          </dependencies>
+          <updates>
+            <update type="change" />
+          </updates>
+          <control type="toggle" />
+        </setting>
+        <setting id="videoplayer.useawvp8" type="boolean" parent="videoplayer.usecedarx" label="60006" help="60002">
+          <level>3</level>
+          <default>false</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="videoplayer.usecedarx" operator="is">true</condition>
+            </dependency>
+            <dependency type="visible" on="property" name="codecoptionvisible" setting="videoplayer.useawvp8" operator="is">true</dependency>
+          </dependencies>
+          <updates>
+            <update type="change" />
+          </updates>
+          <control type="toggle" />
+        </setting>
+        <setting id="videoplayer.useawwmv3" type="boolean" parent="videoplayer.usecedarx" label="60007" help="60002">
+          <level>3</level>
+          <default>false</default>
+          <dependencies>
+            <dependency type="enable">
+              <condition setting="videoplayer.usecedarx" operator="is">true</condition>
+            </dependency>
+            <dependency type="visible" on="property" name="codecoptionvisible" setting="videoplayer.useawwmv3" operator="is">true</dependency>
+          </dependencies>
+          <updates>
+            <update type="change" />
+          </updates>
+          <control type="toggle" />
+        </setting>
         <setting id="videoplayer.usevdpau" type="boolean" label="13425" help="36155">
           <requirement>HAVE_LIBVDPAU</requirement>
           <level>2</level>

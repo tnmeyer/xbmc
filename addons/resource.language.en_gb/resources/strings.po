@@ -19383,6 +19383,48 @@ msgctxt "#37045"
 msgid "Extract chapter thumbnails for presentation in the chapters / bookmarks dialogue. This might increase CPU load."
 msgstr ""
 
+#: system/settings/settings.xml
+msgctxt "#60001"
+msgid "Use software decoding for SD video content"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60002"
+msgid "Configure CedarX decoding hardware on Allwinner A10/A20"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60003"
+msgid "Use hardware decoding for MPEG2 video content"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60004"
+msgid "Use hardware decoding for H.264 video content"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60005"
+msgid "Use hardware decoding for MPEG4 video content"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60006"
+msgid "Use hardware decoding for VP8 video content"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60007"
+msgid "Use hardware decoding for WMV3 video content"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#60010"
+msgid "Use CedarX hardware decoder"
+msgstr ""
+
+
+
 #empty strings from id 37046 to 38009
 
 #: system/settings/rbp.xml

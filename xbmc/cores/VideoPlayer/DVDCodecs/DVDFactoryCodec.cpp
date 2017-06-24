@@ -37,6 +37,7 @@
 #include "utils/AMLUtils.h"
 #include "Video/DVDVideoCodecAmlogic.h"
 #endif
+#include "Video/DVDVideoCodecCedarX.h"
 #if defined(TARGET_ANDROID)
 #include "Video/DVDVideoCodecAndroidMediaCodec.h"
 #include "platform/android/activity/AndroidFeatures.h"
@@ -149,6 +150,11 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, CProces
     pCodec = OpenCodec(new CDVDVideoCodecOpenMax(processInfo), hint, options);
 #elif defined(HAS_MMAL)
     pCodec = OpenCodec(new CMMALVideo(processInfo), hint, options);
+#elif defined(HAS_CEDARX)
+  if (!hint.software)
+  {
+    pCodec = OpenCodec(new CDVDVideoCodecSunxi(processInfo), hint, options);
+  }
 #endif
     if (pCodec)
       return pCodec;
